@@ -1,0 +1,10 @@
+.DS_Store
+node_modules
+.pnp*
+dist
+build
+.cache
+.vscode/*.log
+.env
+.env.*
+coverage
