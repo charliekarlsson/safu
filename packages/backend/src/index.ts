@@ -30,6 +30,7 @@ app.post("/api/challenge", (req, res) => {
 });
 
 // One-off micro-login endpoint to support the fixed receiver flow from the static page.
+const MICRO_LAMPORTS = 40_000; // 0.00004 SOL, matches frontend
 app.post("/api/micro-login", (req, res) => {
   const { walletAddress, receiver, amountLamports, token, chain } = req.body || {};
 
@@ -37,10 +38,11 @@ app.post("/api/micro-login", (req, res) => {
     return res.status(400).json({ ok: false, error: "missing_fields" });
   }
 
-  const lamports = Number(amountLamports ?? config.minLamports);
-  if (!Number.isFinite(lamports) || lamports <= 0) {
+  const lamportsRaw = Number(amountLamports ?? MICRO_LAMPORTS);
+  if (!Number.isFinite(lamportsRaw) || lamportsRaw <= 0) {
     return res.status(400).json({ ok: false, error: "invalid_amount" });
   }
+  const lamports = Math.max(lamportsRaw, MICRO_LAMPORTS);
 
   // Optional: basic token/chain guard to keep payloads consistent
   if (token && token !== "SOL") {
