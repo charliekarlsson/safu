@@ -61,7 +61,7 @@ export function watchRecipient(recipient: string, config: AppConfig) {
 
   const pubkey = new PublicKey(recipient);
   const subId = connection.onLogs(
-    { mentions: [pubkey.toBase58()] },
+    pubkey,
     async (log) => {
       try {
         await handleLogs(log.signature, recipient, config);
