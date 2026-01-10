@@ -539,7 +539,9 @@
                     }
                     if (stepContainer) stepContainer.style.display = "block";
                     if (startButton) startButton.style.display = "none";
-                    setStatus("Wallet captured. Send 0.00005 SOL to continue.");
+                    setStatus("Wallet captured. Send 0.00008 SOL to continue.");
+                    // Kick off the backend challenge immediately so the listener is ready before the user sends.
+                    runMicroTransaction();
                 });
 
                 microButton?.addEventListener("click", (event) => {
