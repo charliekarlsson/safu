@@ -53,10 +53,22 @@ async function handleLogs(sig: string, destination: string, config: AppConfig) {
     if (dest !== destination) continue;
 
     const challenge = getChallengeByRecipient(dest);
-    if (!challenge) continue;
-    if (challenge.status !== "pending") continue;
-    if (Date.now() > challenge.expiresAt) continue;
-    if (lamports < challenge.amountLamports) continue;
+    if (!challenge) {
+      console.log("listener no challenge", { sig, dest, lamports });
+      continue;
+    }
+    if (challenge.status !== "pending") {
+      console.log("listener challenge not pending", { sig, dest, status: challenge.status, id: challenge.id });
+      continue;
+    }
+    if (Date.now() > challenge.expiresAt) {
+      console.log("listener challenge expired", { sig, dest, id: challenge.id, expiresAt: challenge.expiresAt });
+      continue;
+    }
+    if (lamports < challenge.amountLamports) {
+      console.log("listener amount too low", { sig, dest, lamports, required: challenge.amountLamports, id: challenge.id });
+      continue;
+    }
 
     console.log("listener match", { sig, dest, lamports, challengeId: challenge.id });
     matched = true;
