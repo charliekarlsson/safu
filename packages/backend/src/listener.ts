@@ -19,7 +19,8 @@ async function handleLogs(sig: string, destination: string, config: AppConfig) {
   console.log("listener log event", { sig, destination });
   const parsed = await conn.getParsedTransaction(sig, {
     commitment: config.commitment,
-    maxSupportedTransactionVersion: 0,
+    // Allow versioned transactions
+    maxSupportedTransactionVersion: null,
   });
   if (!parsed) {
     console.log("listener parsed tx missing", { sig });
@@ -27,6 +28,20 @@ async function handleLogs(sig: string, destination: string, config: AppConfig) {
   }
 
   const instructions = parsed.transaction.message.instructions;
+  const summary = instructions.map((inst) => {
+    const ix = "parsed" in inst ? inst.parsed : null;
+    const info: any = ix?.info || {};
+    return {
+      program: ix?.program,
+      type: ix?.type,
+      destination: info.destination,
+      source: info.source,
+      lamports: info.lamports,
+    };
+  });
+  console.log("listener parsed summary", { sig, summary });
+
+  let matched = false;
   for (const inst of instructions) {
     const ix = "parsed" in inst ? inst.parsed : null;
     if (!ix || ix.type !== "transfer") continue;
@@ -44,6 +59,7 @@ async function handleLogs(sig: string, destination: string, config: AppConfig) {
     if (lamports < challenge.amountLamports) continue;
 
     console.log("listener match", { sig, dest, lamports, challengeId: challenge.id });
+    matched = true;
 
     markChallengeConsumed(challenge.id, {
       detectedFromPubkey: source,
@@ -58,6 +74,10 @@ async function handleLogs(sig: string, destination: string, config: AppConfig) {
     });
 
     await postWebhook({ ...challenge, detectedFromPubkey: source, txSignature: sig, receivedLamports: lamports }, session);
+  }
+
+  if (!matched) {
+    console.log("listener no transfer match", { sig, destination });
   }
 }
 
