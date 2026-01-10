@@ -39,6 +39,8 @@ async function handleLogs(sig: string, destination: string, config: AppConfig) {
     if (Date.now() > challenge.expiresAt) continue;
     if (lamports < challenge.amountLamports) continue;
 
+    console.log("listener match", { sig, dest, lamports, challengeId: challenge.id });
+
     markChallengeConsumed(challenge.id, {
       detectedFromPubkey: source,
       txSignature: sig,
@@ -72,6 +74,7 @@ export function watchRecipient(recipient: string, config: AppConfig) {
     config.commitment,
   );
   subscriptions.set(recipient, subId);
+  console.log("listener subscribed", { recipient, subId });
 }
 
 export function startListener(config: AppConfig) {
