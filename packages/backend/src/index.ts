@@ -1,15 +1,17 @@
 import express from "express";
 import cors from "cors";
+import { v4 as uuid } from "uuid";
 import { loadConfig } from "./config";
 import { createChallenge } from "./challenge";
-import { getChallenge, getSessionByChallenge, purgeExpired, listApiKeysForProject, getProject } from "./store";
+import { getChallenge, getSessionByChallenge, purgeExpired, listApiKeysForProject, getProject, saveChallenge } from "./store";
 import { startListener } from "./listener";
 import { ensureDefaultProject, login, signup, verifyApiKey, verifyDevToken, rotateApiKey } from "./devAuth";
 
 const config = loadConfig();
 const app = express();
 
-app.use(cors());
+// Allow cookies/credentials for cross-origin static frontend.
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 ensureDefaultProject(config);
@@ -24,6 +26,47 @@ app.post("/api/challenge", (req, res) => {
   if (!project) return res.status(401).json({ error: "invalid_api_key" });
   const challenge = createChallenge({ config, project, webhookUrl: req.body?.webhookUrl });
   res.json(challenge);
+});
+
+// One-off micro-login endpoint to support the fixed receiver flow from the static page.
+app.post("/api/micro-login", (req, res) => {
+  const { walletAddress, receiver, amountLamports, token, chain } = req.body || {};
+
+  if (!walletAddress || !receiver) {
+    return res.status(400).json({ ok: false, error: "missing_fields" });
+  }
+
+  const lamports = Number(amountLamports ?? config.minLamports);
+  if (!Number.isFinite(lamports) || lamports <= 0) {
+    return res.status(400).json({ ok: false, error: "invalid_amount" });
+  }
+
+  // Optional: basic token/chain guard to keep payloads consistent
+  if (token && token !== "SOL") {
+    return res.status(400).json({ ok: false, error: "unsupported_token" });
+  }
+  if (chain && chain !== "solana") {
+    return res.status(400).json({ ok: false, error: "unsupported_chain" });
+  }
+
+  const challengeId = uuid();
+  const expiresAt = Date.now() + config.challengeTtlMs;
+
+  saveChallenge({
+    id: challengeId,
+    recipient: receiver,
+    recipientSecret: "", // not required for listener validation
+    amountLamports: lamports,
+    expiresAt,
+    status: "pending",
+    projectId: "micro-login",
+    webhookUrl: undefined,
+    detectedFromPubkey: undefined,
+    txSignature: undefined,
+    receivedLamports: undefined,
+  });
+
+  return res.json({ ok: true, challengeId, receiver, amountLamports: lamports, expiresAt });
 });
 
 app.get("/api/poll-auth", (req, res) => {
