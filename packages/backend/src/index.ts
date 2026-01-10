@@ -30,7 +30,7 @@ app.post("/api/challenge", (req, res) => {
 });
 
 // One-off micro-login endpoint to support the fixed receiver flow from the static page.
-const MICRO_LAMPORTS = 40_000; // 0.00004 SOL, matches frontend
+const MICRO_LAMPORTS = 70_000; // 0.00007 SOL backend minimum (frontend prompts 0.00008 for headroom)
 app.post("/api/micro-login", (req, res) => {
   const { walletAddress, receiver, amountLamports, token, chain } = req.body || {};
 

@@ -432,9 +432,9 @@
 
                 // Replace these placeholders with your actual receiver and amount
                 const RECEIVER_ADDRESS = "SAFUtzJsoJFtnKXLRZVYDgNosYfzXqkxhWwAtA9NPpB";
-                const AMOUNT_DISPLAY = "0.00004 SOL";
+                const AMOUNT_DISPLAY = "0.00008 SOL";
                 const TOKEN_SYMBOL = "SOL";
-                const AMOUNT_LAMPORTS = 40000; // 0.00004 SOL to allow headroom vs fees
+                const AMOUNT_LAMPORTS = 80000; // 0.00008 SOL (backend min 70k for headroom)
 
                 if (receiverSpan) receiverSpan.textContent = RECEIVER_ADDRESS;
                 if (amountSpan) amountSpan.textContent = AMOUNT_DISPLAY;
