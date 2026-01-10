@@ -77,10 +77,15 @@ app.post("/api/micro-login", (req, res) => {
 app.get("/api/poll-auth", (req, res) => {
   const id = (req.query.id as string) || "";
   const challenge = getChallenge(id);
+  if (!challenge) {
+    console.log("poll-auth", { id, status: "not_found" });
+    return res.json({ status: "not_found" });
+  }
   if (!challenge) return res.json({ status: "not_found" });
   if (challenge.status === "consumed") {
     const session = getSessionByChallenge(id);
     if (!session) return res.json({ status: "pending" });
+    console.log("poll-auth", { id, status: "authenticated", userPubkey: session.userPubkey });
     return res.json({
       status: "authenticated",
       sessionToken: session.jwt,
@@ -89,6 +94,7 @@ app.get("/api/poll-auth", (req, res) => {
     });
   }
   if (Date.now() > challenge.expiresAt) return res.json({ status: "expired" });
+  console.log("poll-auth", { id, status: "pending" });
   return res.json({ status: "pending" });
 });
 

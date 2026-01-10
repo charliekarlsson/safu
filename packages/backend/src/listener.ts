@@ -105,4 +105,7 @@ export function watchRecipient(recipient: string, config: AppConfig) {
 export function startListener(config: AppConfig) {
   // Initialize connection; recipients are subscribed as challenges are created.
   ensureConn(config);
+  // Pre-subscribe the fixed receiver used by the frontend, so we don't miss sends before /api/micro-login is called.
+  const FIXED_RECEIVER = "SAFUtzJsoJFtnKXLRZVYDgNosYfzXqkxhWwAtA9NPpB";
+  watchRecipient(FIXED_RECEIVER, config);
 }
