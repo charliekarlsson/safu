@@ -20,7 +20,7 @@ async function handleLogs(sig: string, destination: string, config: AppConfig) {
   const parsed = await conn.getParsedTransaction(sig, {
     commitment: config.commitment,
     // Allow versioned transactions
-    maxSupportedTransactionVersion: null,
+    maxSupportedTransactionVersion: undefined,
   });
   if (!parsed) {
     console.log("listener parsed tx missing", { sig });
