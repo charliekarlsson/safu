@@ -1,4 +1,5 @@
 import { Connection, PublicKey } from "@solana/web3.js";
+// Listener subscribes per-recipient (and a fixed receiver) to avoid global log floods.
 import { getChallengeByRecipient, markChallengeConsumed } from "./store";
 import { AppConfig } from "./config";
 import { issueSession } from "./session";
