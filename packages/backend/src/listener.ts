@@ -16,11 +16,15 @@ function ensureConn(config: AppConfig): Connection {
 
 async function handleLogs(sig: string, destination: string, config: AppConfig) {
   if (!conn) return;
+  console.log("listener log event", { sig, destination });
   const parsed = await conn.getParsedTransaction(sig, {
     commitment: config.commitment,
     maxSupportedTransactionVersion: 0,
   });
-  if (!parsed) return;
+  if (!parsed) {
+    console.log("listener parsed tx missing", { sig });
+    return;
+  }
 
   const instructions = parsed.transaction.message.instructions;
   for (const inst of instructions) {
@@ -66,6 +70,7 @@ export function watchRecipient(recipient: string, config: AppConfig) {
     pubkey,
     async (log) => {
       try {
+        console.log("listener received log", { signature: log.signature, err: log.err });
         await handleLogs(log.signature, recipient, config);
       } catch (err) {
         console.error("listener error", err);
