@@ -3,9 +3,10 @@ import cors from "cors";
 import { v4 as uuid } from "uuid";
 import { loadConfig } from "./config";
 import { createChallenge } from "./challenge";
-import { getChallenge, getSessionByChallenge, purgeExpired, listApiKeysForProject, getProject, saveChallenge } from "./store";
+import { getChallenge, getSessionByChallenge, purgeExpired, listApiKeysForProject, getProject, saveChallenge, addProject, createApiKey } from "./store";
 import { startListener, watchRecipient } from "./listener";
 import { ensureDefaultProject, login, signup, verifyApiKey, verifyDevToken, rotateApiKey } from "./devAuth";
+import jwt from "jsonwebtoken";
 
 const config = loadConfig();
 const app = express();
@@ -15,6 +16,36 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 ensureDefaultProject(config);
+
+function decodeSession(req: express.Request): { userPubkey: string } | null {
+  const auth = req.headers.authorization || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!token) return null;
+  try {
+    const decoded = jwt.verify(token, config.jwtSecret) as any;
+    return { userPubkey: decoded.sub };
+  } catch (err) {
+    return null;
+  }
+}
+
+function ensureWalletProject(pubkey: string) {
+  let project = getProject(pubkey);
+  if (!project) {
+    project = {
+      id: pubkey,
+      name: `Wallet ${pubkey.slice(0, 4)}…${pubkey.slice(-4)}`,
+      minLamports: config.minLamports,
+      challengeTtlMs: config.challengeTtlMs,
+      commitment: config.commitment,
+    };
+    addProject(project);
+    createApiKey(project.id);
+  }
+  const keys = listApiKeysForProject(project.id);
+  const latestKey = keys[keys.length - 1] || createApiKey(project.id);
+  return { project, apiKey: latestKey };
+}
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true });
@@ -140,6 +171,30 @@ app.post("/api/dev/rotate-key", (req, res) => {
   const decoded = verifyDevToken(token, config.jwtSecret);
   if (!decoded) return res.status(401).json({ error: "unauthorized" });
   const project = getProject(decoded.projectId);
+  if (!project) return res.status(404).json({ error: "project_missing" });
+  const newKey = rotateApiKey(project.id);
+  res.json({ apiKey: newKey });
+});
+
+// Wallet-native project APIs (no email/password). Uses the session token issued after micro-auth.
+app.post("/api/wallet/bootstrap", (req, res) => {
+  const session = decodeSession(req);
+  if (!session) return res.status(401).json({ error: "unauthorized" });
+  const result = ensureWalletProject(session.userPubkey);
+  res.json(result);
+});
+
+app.get("/api/wallet/me", (req, res) => {
+  const session = decodeSession(req);
+  if (!session) return res.status(401).json({ error: "unauthorized" });
+  const result = ensureWalletProject(session.userPubkey);
+  res.json(result);
+});
+
+app.post("/api/wallet/rotate-key", (req, res) => {
+  const session = decodeSession(req);
+  if (!session) return res.status(401).json({ error: "unauthorized" });
+  const project = getProject(session.userPubkey);
   if (!project) return res.status(404).json({ error: "project_missing" });
   const newKey = rotateApiKey(project.id);
   res.json({ apiKey: newKey });

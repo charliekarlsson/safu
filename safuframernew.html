@@ -351,6 +351,99 @@
                 cursor: pointer;
                 font-size: 16px;
             }
+
+            /* Dashboard overlay */
+            #dash-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(6px);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                z-index: 9998;
+                padding: 20px;
+            }
+
+            #dash-overlay.active {
+                display: flex;
+            }
+
+            #dash-modal {
+                width: min(520px, 100%);
+                background: rgba(13, 13, 13, 0.92);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 16px;
+                padding: 20px;
+                color: #eef2f8;
+                position: relative;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            }
+
+            .dash-title {
+                margin: 0 0 6px;
+                font-size: 18px;
+                font-weight: 700;
+            }
+
+            .dash-sub {
+                margin: 0 0 14px;
+                color: #9ca9c0;
+                font-size: 14px;
+            }
+
+            .dash-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+
+            .dash-input {
+                width: 100%;
+                padding: 10px 12px;
+                border-radius: 10px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                background: rgba(255, 255, 255, 0.04);
+                color: #eef2f8;
+                font-size: 14px;
+            }
+
+            .dash-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                padding: 10px 14px;
+                border: none;
+                border-radius: 10px;
+                background: linear-gradient(180deg, #8a53d2 0%, #7a45c1 100%);
+                color: #fff;
+                cursor: pointer;
+                transition: transform 120ms ease, opacity 120ms ease;
+                font-weight: 700;
+                font-size: 14px;
+            }
+
+            .dash-btn.secondary {
+                background: rgba(255, 255, 255, 0.06);
+            }
+
+            .dash-btn:hover { transform: translateY(-1px); }
+
+            .dash-card {
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 12px;
+                padding: 12px;
+                background: rgba(255, 255, 255, 0.02);
+                margin-top: 10px;
+                font-size: 13px;
+            }
+
+            .dash-kv { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+            .dash-kv span:first-child { color: #9ca9c0; }
+
+            .dash-status { color: #ffb4b4; font-size: 13px; min-height: 18px; }
         </style>
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
     
@@ -384,6 +477,23 @@
                     </div>
                 </div>
                 <div class="portal-status" id="portal-status"></div>
+            </div>
+        </div>
+
+        <div id="dash-overlay" role="presentation">
+            <div id="dash-modal" role="dialog" aria-modal="true" aria-labelledby="dash-title">
+                <button id="dash-close" class="portal-close" aria-label="Close dashboard">&times;</button>
+                <h3 class="dash-title" id="dash-title">Developer dashboard</h3>
+                <p class="dash-sub">Authenticated via your wallet. Use this dashboard to get your project API key.</p>
+
+                <div class="dash-card">
+                    <div class="dash-kv"><span>Wallet</span><span id="dash-user">Not signed in</span></div>
+                    <div class="dash-kv"><span>Project</span><span id="dash-project">—</span></div>
+                    <div class="dash-kv"><span>API key</span><span id="dash-key">—</span></div>
+                    <div class="dash-kv"><span>Min lamports</span><span id="dash-min">—</span></div>
+                    <button class="dash-btn" data-dash-action="rotate">Generate / rotate key</button>
+                    <div class="dash-status" id="dash-status"></div>
+                </div>
             </div>
         </div>
 
@@ -428,6 +538,7 @@
                 const API_BASE = (window.__SAFU_API_BASE__ || "").replace(/\/$/, "");
                 const api = (path) => `${API_BASE}${path}`;
                 let lockedWallet = "";
+                let activeChallenge = null;
                 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
                 let countdownInterval = null;
 
@@ -437,8 +548,12 @@
                 const TOKEN_SYMBOL = "SOL";
                 const AMOUNT_LAMPORTS = 80000; // 0.00008 SOL (backend min 70k for headroom)
 
-                if (receiverSpan) receiverSpan.textContent = RECEIVER_ADDRESS;
-                if (amountSpan) amountSpan.textContent = AMOUNT_DISPLAY;
+                const defaultSummary = () => {
+                    if (receiverSpan) receiverSpan.textContent = RECEIVER_ADDRESS;
+                    if (amountSpan) amountSpan.textContent = AMOUNT_DISPLAY;
+                };
+
+                defaultSummary();
 
                 const defaultLabel = microButton?.textContent ?? "Confirm & verify";
 
@@ -446,6 +561,19 @@
                     if (!statusEl) return;
                     statusEl.textContent = msg ?? "";
                     statusEl.style.color = isError ? "#ffb4b4" : "#9ca9c0";
+                };
+
+                const lamportsToSolDisplay = (lamports) => {
+                    if (!Number.isFinite(lamports)) return AMOUNT_DISPLAY;
+                    const sol = lamports / 1_000_000_000;
+                    return `${sol.toFixed(8).replace(/0+$/, "").replace(/\.$/, "")} SOL`;
+                };
+
+                const updateSummary = (challenge) => {
+                    if (!challenge) return defaultSummary();
+                    if (receiverSpan) receiverSpan.textContent = challenge.recipient || RECEIVER_ADDRESS;
+                    const display = lamportsToSolDisplay(challenge.amountLamports);
+                    if (amountSpan) amountSpan.textContent = display;
                 };
 
                 const pollAuthOnce = async (challengeId) => {
@@ -468,6 +596,30 @@
                     throw new Error("Timeout waiting for authentication.");
                 };
 
+                const ensureChallenge = async () => {
+                    const apiKey = (localStorage.getItem("safuApiKey") || "").trim();
+                    if (!apiKey) return null;
+                    try {
+                        const res = await fetch(api("/api/challenge"), {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json", "x-api-key": apiKey },
+                            credentials: "include",
+                        });
+                        if (!res.ok) throw new Error("challenge_failed");
+                        const data = await res.json();
+                        activeChallenge = data;
+                        updateSummary(activeChallenge);
+                        setStatus("Challenge ready. Send the micro-transaction to continue.");
+                        return data;
+                    } catch (err) {
+                        console.warn("ensureChallenge", err);
+                        setStatus("Using fallback receiver (no API key found).");
+                        activeChallenge = null;
+                        defaultSummary();
+                        return null;
+                    }
+                };
+
                 const runMicroTransaction = async () => {
                     const walletAddress = lockedWallet || walletInput?.value?.trim();
                     if (!walletAddress) {
@@ -478,38 +630,54 @@
                     setStatus("");
 
                     try {
+                        const challenge = activeChallenge || (await ensureChallenge());
+
+                        const receiver = challenge?.recipient || RECEIVER_ADDRESS;
+                        const amtLamports = Number(challenge?.amountLamports) || AMOUNT_LAMPORTS;
+                        const amtDisplay = challenge ? lamportsToSolDisplay(amtLamports) : AMOUNT_DISPLAY;
+
                         const payload = {
                             walletAddress,
-                            receiver: RECEIVER_ADDRESS,
-                            amount: AMOUNT_DISPLAY,
-                            amountLamports: AMOUNT_LAMPORTS,
+                            receiver,
+                            amount: amtDisplay,
+                            amountLamports: amtLamports,
                             token: TOKEN_SYMBOL,
                         };
 
-                        let result;
-                        if (typeof window.microTxLogin === "function") {
-                            result = await window.microTxLogin(payload);
-                        } else if (typeof window.startMicroTransaction === "function") {
+                        let result = null;
+                        if (typeof window.startMicroTransaction === "function") {
                             result = await window.startMicroTransaction(payload);
+                        } else if (typeof window.microTxLogin === "function") {
+                            // Legacy hook: will create its own micro-login; only use when no API key flow succeeded.
+                            result = await window.microTxLogin(payload);
                         } else {
-                            console.warn("Micro-transaction handler missing. Define window.microTxLogin(payload).");
+                            console.warn("Micro-transaction handler missing. Define window.startMicroTransaction(payload).");
                         }
 
-                        console.log("micro-login result", result);
-
-                        const challengeId = result?.challengeId || result?.id;
-                        if (!challengeId) {
-                            setStatus("Missing challenge id from backend.", true);
+                        const resolvedId = challenge?.id || result?.challengeId || result?.id || null;
+                        if (!resolvedId) {
+                            setStatus("Missing challenge id. Add your API key in dashboard.", true);
                             return;
                         }
 
                         setStatus("Awaiting backend confirmation...", false);
-                        const authData = await waitForAuth(challengeId);
+                        const authData = await waitForAuth(resolvedId);
                         if (countdownInterval) {
                             clearInterval(countdownInterval);
                             countdownInterval = null;
                         }
                         setStatus("Authenticated!", false);
+                        if (authData?.sessionToken) {
+                            localStorage.setItem("safuSession", authData.sessionToken);
+                        }
+                        if (authData?.userPubkey) {
+                            localStorage.setItem("safuWallet", authData.userPubkey);
+                        }
+                        // Close portal and surface the dashboard now that the user is authenticated.
+                        closePortal?.();
+                        if (typeof window.__openDashboard === "function") {
+                            window.__openDashboard({ token: authData?.sessionToken, wallet: authData?.userPubkey });
+                        }
                         if (authData.redirectUrl) {
                             window.location.href = authData.redirectUrl;
                         }
@@ -523,7 +691,8 @@
                     if (countdownInterval) clearInterval(countdownInterval);
                     let remaining = seconds;
                     const tick = () => {
-                        setStatus(`Send ${AMOUNT_DISPLAY} to continue. Time left: ${remaining}s`);
+                        const disp = amountSpan?.textContent || AMOUNT_DISPLAY;
+                        setStatus(`Send ${disp} to continue. Time left: ${remaining}s`);
                         remaining -= 1;
                         if (remaining < 0) {
                             clearInterval(countdownInterval);
@@ -552,14 +721,157 @@
                     if (startButton) startButton.style.display = "none";
                     if (microButton) microButton.style.display = "none";
                     startCountdown(120);
-                    // Kick off the backend challenge immediately so the listener is ready before the user sends.
-                    runMicroTransaction();
+                    // Kick off a project-scoped challenge first if an API key is present.
+                    ensureChallenge().then(() => runMicroTransaction());
                 });
 
                 microButton?.addEventListener("click", (event) => {
                     event.preventDefault();
                     runMicroTransaction();
                 });
+            })();
+        </script>
+
+        <script>
+            (() => {
+                const overlay = document.getElementById("dash-overlay");
+                const closeBtn = document.getElementById("dash-close");
+                const statusEl = document.getElementById("dash-status");
+                const userEl = document.getElementById("dash-user");
+                const projectEl = document.getElementById("dash-project");
+                const keyEl = document.getElementById("dash-key");
+                const minEl = document.getElementById("dash-min");
+                const API_BASE = (window.__SAFU_API_BASE__ || "").replace(/\/$/, "");
+                const api = (path) => `${API_BASE}${path}`;
+
+                let sessionToken = localStorage.getItem("safuSession") || "";
+                let cachedKey = localStorage.getItem("safuApiKey") || "";
+                let cachedWallet = localStorage.getItem("safuWallet") || "";
+
+                const setStatus = (msg, isError = false) => {
+                    if (!statusEl) return;
+                    statusEl.textContent = msg || "";
+                    statusEl.style.color = isError ? "#ffb4b4" : "#9ca9c0";
+                };
+
+                const renderInfo = (info) => {
+                    userEl.textContent = info?.wallet || cachedWallet || "Not signed in";
+                    projectEl.textContent = info?.project?.name || "—";
+                    keyEl.textContent = info?.apiKey?.id || cachedKey || "—";
+                    minEl.textContent = info?.project?.minLamports ? `${info.project.minLamports} lamports` : "—";
+                };
+
+                const persistSession = (token, wallet) => {
+                    sessionToken = token || "";
+                    cachedWallet = wallet || cachedWallet;
+                    if (sessionToken) {
+                        localStorage.setItem("safuSession", sessionToken);
+                    } else {
+                        localStorage.removeItem("safuSession");
+                    }
+                    if (cachedWallet) {
+                        localStorage.setItem("safuWallet", cachedWallet);
+                    }
+                };
+
+                const persistKey = (keyId) => {
+                    cachedKey = keyId || "";
+                    if (cachedKey) {
+                        localStorage.setItem("safuApiKey", cachedKey);
+                    } else {
+                        localStorage.removeItem("safuApiKey");
+                    }
+                };
+
+                const authHeaders = () => (sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {});
+
+                const fetchMe = async () => {
+                    if (!sessionToken) {
+                        renderInfo(undefined);
+                        setStatus("Authenticate with wallet first", true);
+                        return;
+                    }
+                    try {
+                        // Ensure a project and key exist for this wallet.
+                        await fetch(api("/api/wallet/bootstrap"), { method: "POST", headers: { ...authHeaders() } }).catch(() => {});
+                        const res = await fetch(api("/api/wallet/me"), { headers: { ...authHeaders() } });
+                        if (!res.ok) {
+                            if (res.status === 401) {
+                                persistSession("", "");
+                                persistKey("");
+                            }
+                            throw new Error("Unable to load profile");
+                        }
+                        const data = await res.json();
+                        renderInfo({ ...data, wallet: cachedWallet });
+                        if (data?.apiKey?.id) persistKey(data.apiKey.id);
+                        setStatus("Profile loaded");
+                    } catch (err) {
+                        console.error("fetchMe", err);
+                        renderInfo(undefined);
+                        setStatus(err?.message || "Failed to load", true);
+                    }
+                };
+
+                const rotateKey = async () => {
+                    if (!sessionToken) {
+                        setStatus("Authenticate with wallet first", true);
+                        return;
+                    }
+                    setStatus("Rotating...");
+                    try {
+                        const res = await fetch(api("/api/wallet/rotate-key"), {
+                            method: "POST",
+                            headers: { ...authHeaders() },
+                        });
+                        if (!res.ok) throw new Error("Rotate failed");
+                        const data = await res.json();
+                        persistKey(data?.apiKey?.id);
+                        renderInfo({ apiKey: data.apiKey, project: { name: projectEl.textContent }, wallet: cachedWallet });
+                        setStatus("Key rotated");
+                    } catch (err) {
+                        console.error("rotate", err);
+                        setStatus(err?.message || "Rotate failed", true);
+                    }
+                };
+
+                const openOverlay = (event) => {
+                    event?.preventDefault();
+                    overlay?.classList.add("active");
+                    fetchMe();
+                };
+
+                const closeOverlay = () => overlay?.classList.remove("active");
+
+                // Expose a helper for the portal flow to open the dashboard after auth.
+                window.__openDashboard = (session) => {
+                    if (session?.token) {
+                        persistSession(session.token, session.wallet);
+                    }
+                    overlay?.classList.add("active");
+                    fetchMe();
+                };
+
+                document.addEventListener("click", (event) => {
+                    const trigger = event.target.closest("[data-dashboard-trigger]");
+                    if (trigger) openOverlay(event);
+                    if (event.target === overlay) closeOverlay();
+                });
+
+                closeBtn?.addEventListener("click", closeOverlay);
+
+                document.addEventListener("keydown", (event) => {
+                    if (event.key === "Escape" && overlay?.classList.contains("active")) {
+                        closeOverlay();
+                    }
+                });
+
+                document.querySelector('[data-dash-action="rotate"]')?.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    rotateKey();
+                });
+
+                renderInfo({ apiKey: cachedKey ? { id: cachedKey } : undefined, wallet: cachedWallet });
             })();
         </script>
 
@@ -610,21 +922,20 @@
 
                 const injectIntoContainer = (container) => {
                     if (!container) return false;
-                    if (container.querySelector('[data-portal-trigger="portal"]')) return true;
 
                     const links = Array.from(container.querySelectorAll('a[data-framer-name], a'));
                     if (links.length === 0) return false;
 
                     const anchor = links[0];
-                    const portalLink = anchor.cloneNode(true);
-                    portalLink.setAttribute('data-portal-trigger', 'portal');
-                    portalLink.setAttribute('href', '#');
-                    portalLink.dataset.framerName = 'Portal';
 
-                    const label = portalLink.querySelector('[data-styles-preset]') || portalLink.querySelector('span, p');
+                    if (container.querySelector('[data-portal-trigger="portal"]')) return false;
+                    const link = anchor.cloneNode(true);
+                    link.setAttribute('data-portal-trigger', 'portal');
+                    link.setAttribute('href', '#');
+                    link.dataset.framerName = 'Portal';
+                    const label = link.querySelector('[data-styles-preset]') || link.querySelector('span, p');
                     if (label) label.textContent = 'Portal';
-
-                    container.insertBefore(portalLink, anchor.nextSibling);
+                    container.insertBefore(link, anchor.nextSibling);
                     return true;
                 };
 
@@ -634,7 +945,7 @@
                     triggers.slice(1).forEach((el) => el.remove());
                 };
 
-                const updatePortalLink = () => {
+                const updateLinks = () => {
                     let injected = false;
                     targetSelectors.forEach((selector) => {
                         const container = document.querySelector(selector);
@@ -649,7 +960,7 @@
                     let runs = 0;
                     const interval = setInterval(() => {
                         runs += 1;
-                        if (updatePortalLink() || runs >= maxRuns) {
+                        if (updateLinks() || runs >= maxRuns) {
                             clearInterval(interval);
                         }
                     }, 250);
