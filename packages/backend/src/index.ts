@@ -4,7 +4,7 @@ import { v4 as uuid } from "uuid";
 import { loadConfig } from "./config";
 import { createChallenge } from "./challenge";
 import { getChallenge, getSessionByChallenge, purgeExpired, listApiKeysForProject, getProject, saveChallenge } from "./store";
-import { startListener } from "./listener";
+import { startListener, watchRecipient } from "./listener";
 import { ensureDefaultProject, login, signup, verifyApiKey, verifyDevToken, rotateApiKey } from "./devAuth";
 
 const config = loadConfig();
@@ -25,6 +25,7 @@ app.post("/api/challenge", (req, res) => {
   const project = verifyApiKey(apiKey);
   if (!project) return res.status(401).json({ error: "invalid_api_key" });
   const challenge = createChallenge({ config, project, webhookUrl: req.body?.webhookUrl });
+  watchRecipient(challenge.recipient, config);
   res.json(challenge);
 });
 
@@ -65,6 +66,8 @@ app.post("/api/micro-login", (req, res) => {
     txSignature: undefined,
     receivedLamports: undefined,
   });
+
+  watchRecipient(receiver, config);
 
   return res.json({ ok: true, challengeId, receiver, amountLamports: lamports, expiresAt });
 });
