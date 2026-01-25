@@ -39,7 +39,7 @@ If you prefer Nixpacks instead of Docker, set:
 
 ## Security notes
 
-- Ephemeral recipients are single-use; challenges expire after TTL (default 5 minutes) and enforce a min lamport amount (default 10,000 lamports).
+- Ephemeral recipients are single-use; challenges expire after TTL (default 5 minutes) and enforce a min lamport amount (default 7,000 lamports).
 - Listener verifies recipient, amount, and expiry before issuing a JWT bound to the sender pubkey; transaction signature is recorded for audit.
 - Avoid arbitrary signing prompts entirely; users only perform a standard SOL transfer.
 - Store `JWT_SECRET` securely; rotate it if compromised.

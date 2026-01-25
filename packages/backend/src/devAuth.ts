@@ -1,7 +1,16 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { ApiKey, DevLoginResponse, DevUser, ProjectConfig } from "@safu/auth-shared";
-import { createApiKey, createUser, getProject, getProjectByApiKey, getUser, addProject, listApiKeysForProject } from "./store";
+import {
+  createApiKey,
+  createUser,
+  getProject,
+  getProjectByApiKey,
+  getUser,
+  addProject,
+  listApiKeysForProject,
+  upsertProject,
+} from "./store";
 import { AppConfig } from "./config";
 
 function hashPassword(pw: string) {
@@ -10,7 +19,22 @@ function hashPassword(pw: string) {
 
 export function ensureDefaultProject(config: AppConfig) {
   const existing = getProject("default");
-  if (existing) return;
+  if (existing) {
+    const needsUpdate =
+      existing.minLamports !== config.minLamports ||
+      existing.challengeTtlMs !== config.challengeTtlMs ||
+      existing.commitment !== config.commitment;
+
+    if (needsUpdate) {
+      upsertProject({
+        ...existing,
+        minLamports: config.minLamports,
+        challengeTtlMs: config.challengeTtlMs,
+        commitment: config.commitment,
+      });
+    }
+    return;
+  }
   const project: ProjectConfig = {
     id: "default",
     name: "Default Project",

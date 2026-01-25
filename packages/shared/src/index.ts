@@ -37,7 +37,7 @@ export interface SessionData {
   txSignature?: string;
 }
 
-export const DEFAULT_LAMPORTS = 10_000; // 0.00001 SOL
+export const DEFAULT_LAMPORTS = 7_000; // 0.000007 SOL
 
 // Developer/tenant types
 export interface ProjectConfig {

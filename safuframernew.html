@@ -1,7 +1,4 @@
 <!doctype html>
-
-
-<html lang="en-US">
 <head>
     <meta charset="utf-8">
     <script>
@@ -242,7 +239,8 @@
 @font-face { font-family: "Inter Placeholder"; src: local("Arial"); ascent-override: 89.79%; descent-override: 22.36%; line-gap-override: 0.00%; size-adjust: 107.89% }</style>
 
         <style id="portal-style">
-            #portal-overlay {
+            #portal-overlay,
+            #demo-portal-overlay {
                 position: fixed;
                 inset: 0;
                 background: rgba(0, 0, 0, 0.6);
@@ -254,11 +252,11 @@
                 padding: 20px;
             }
 
-            #portal-overlay.active {
-                display: flex;
-            }
+            #portal-overlay.active,
+            #demo-portal-overlay.active { display: flex; }
 
-            #portal-modal {
+            #portal-modal,
+            #demo-portal-modal {
                 width: min(520px, 100%);
                 background: rgba(13, 13, 13, 0.92);
                 border: 1px solid rgba(255, 255, 255, 0.08);
@@ -272,12 +270,14 @@
                 position: relative;
             }
 
-            #portal-modal h3 {
+            #portal-modal h3,
+            #demo-portal-modal h3 {
                 margin: 0 0 8px;
                 font-size: 20px;
             }
 
-            #portal-modal p {
+            #portal-modal p,
+            #demo-portal-modal p {
                 margin: 0 0 14px;
                 color: #9ca9c0;
             }
@@ -296,7 +296,21 @@
                 cursor: pointer;
                 font-weight: 500;
                 font-size: 1rem;
-                background: #814ac8;
+                background: linear-gradient(180deg, #7a45c1 0%, #6837ac 100%);
+                color: #ffffff;
+                transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+                min-height: 42px;
+            }
+
+            .portal-btn.primary {
+                background: linear-gradient(180deg, #814ac8 0%, #733fb7 100%);
+            }
+
+            .portal-btn:hover {
+                transform: translateY(-1px);
+                background: linear-gradient(180deg, #8a53d2 0%, #7a45c1 100%);
+            }
+
             .portal-input {
                 width: 100%;
                 padding: 10px 12px;
@@ -307,6 +321,7 @@
                 font-size: 14px;
                 margin: 8px 0 12px;
             }
+
             .portal-summary {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -318,27 +333,14 @@
                 margin-bottom: 12px;
                 font-size: 14px;
             }
-            .portal-summary strong {
-                color: #ffffff;
-            }
+
+            .portal-summary strong { color: #ffffff; }
+
             .portal-status {
                 margin-top: 8px;
                 font-size: 13px;
                 color: #9ca9c0;
-            }
-                color: #ffffff;
-                transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
-                min-height: 42px;
-            }
-
-            .portal-btn.primary {
-                background: linear-gradient(180deg, #814ac8 0%, #733fb7 100%);
-                color: #ffffff;
-            }
-
-            .portal-btn:hover {
-                transform: translateY(-1px);
-                background: linear-gradient(180deg, #8a53d2 0%, #7a45c1 100%);
+                min-height: 18px;
             }
 
             .portal-close {
@@ -365,9 +367,7 @@
                 padding: 20px;
             }
 
-            #dash-overlay.active {
-                display: flex;
-            }
+            #dash-overlay.active { display: flex; }
 
             #dash-modal {
                 width: min(520px, 100%);
@@ -425,10 +425,7 @@
                 font-size: 14px;
             }
 
-            .dash-btn.secondary {
-                background: rgba(255, 255, 255, 0.06);
-            }
-
+            .dash-btn.secondary { background: rgba(255, 255, 255, 0.06); }
             .dash-btn:hover { transform: translateY(-1px); }
 
             .dash-card {
@@ -442,8 +439,215 @@
 
             .dash-kv { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
             .dash-kv span:first-child { color: #9ca9c0; }
-
             .dash-status { color: #ffb4b4; font-size: 13px; min-height: 18px; }
+
+            /* Demo page */
+            #demo-page {
+                display: none;
+                justify-content: center;
+                padding: 48px 0 0;
+            }
+
+            #demo-page.active { display: flex; }
+
+            .demo-shell {
+                width: min(980px, 100%);
+                background: transparent;
+                border: none;
+                border-radius: 0;
+                padding: 0;
+                color: #eef2f8;
+                font-family: "Inter", sans-serif;
+                display: grid;
+                grid-template-columns: minmax(320px, 360px) 1fr;
+                gap: 16px;
+                box-shadow: none;
+            }
+
+            @media (max-width: 900px) { .demo-shell { grid-template-columns: 1fr; } }
+
+            .demo-shell.portal-only { grid-template-columns: 1fr; }
+            .demo-shell.game-only { grid-template-columns: 1fr; }
+            .demo-shell.portal-only .demo-right { display: none; }
+            .demo-shell.game-only .demo-left { display: none; }
+
+            .demo-right { display: block; background: transparent; padding: 0; margin: 0 auto; width: 100%; }
+
+            .demo-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
+                border-radius: 999px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                background: rgba(255, 255, 255, 0.04);
+                font-size: 12px;
+                color: #cbd3e3;
+                margin-bottom: 8px;
+            }
+
+            .demo-heading { margin: 0 0 6px; font-size: 22px; }
+            .demo-body { margin: 0 0 12px; color: #9ca9c0; font-size: 14px; line-height: 1.6; }
+
+            .demo-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 10px;
+                margin: 12px 0 6px;
+            }
+
+            .demo-card {
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 12px;
+                padding: 10px 12px;
+                background: rgba(255, 255, 255, 0.02);
+                font-size: 13px;
+            }
+
+            .demo-card strong { display: block; color: #fff; margin-bottom: 4px; }
+            .demo-card span { color: #9ca9c0; font-size: 12px; }
+
+            .demo-input {
+                width: 100%;
+                padding: 11px 12px;
+                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                background: rgba(255, 255, 255, 0.04);
+                color: #eef2f8;
+                font-size: 14px;
+                margin: 8px 0 12px;
+            }
+
+            .demo-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+            .demo-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                padding: 11px 14px;
+                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                background: rgba(255, 255, 255, 0.04);
+                color: #eef2f8;
+                cursor: pointer;
+                font-weight: 700;
+                font-size: 14px;
+                transition: transform 120ms ease, opacity 120ms ease;
+            }
+
+            .demo-btn.primary { background: linear-gradient(180deg, #8a53d2 0%, #7a45c1 100%); border-color: transparent; }
+            .demo-btn.secondary { background: rgba(255, 255, 255, 0.05); }
+            .demo-btn:hover { transform: translateY(-1px); }
+
+            .demo-status { margin-top: 8px; font-size: 13px; color: #9ca9c0; min-height: 18px; }
+
+            .demo-instructions {
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 14px;
+                padding: 14px;
+                background: rgba(255, 255, 255, 0.03);
+                display: grid;
+                gap: 12px;
+            }
+
+            .demo-instructions-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+            }
+
+            .demo-instructions .demo-body { margin: 4px 0 0; }
+
+            .demo-qr {
+                width: 96px;
+                height: 96px;
+                border-radius: 12px;
+                border: 1px dashed rgba(255, 255, 255, 0.14);
+                background: radial-gradient(circle at 30% 30%, rgba(138, 83, 210, 0.2), rgba(122, 69, 193, 0.06));
+                display: grid;
+                place-items: center;
+                color: #cbd3e3;
+                font-size: 12px;
+                text-align: center;
+                padding: 8px;
+            }
+
+            .demo-pay-rows { display: grid; gap: 8px; }
+
+            .demo-pay-row {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 8px;
+                align-items: center;
+                padding: 10px 12px;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .demo-pay-label { color: #9ca9c0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+            .demo-pay-value { color: #eef2f8; font-size: 13px; word-break: break-all; }
+
+            .copy-btn {
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                background: rgba(255, 255, 255, 0.06);
+                color: #eef2f8;
+                border-radius: 10px;
+                padding: 8px 10px;
+                font-size: 12px;
+                cursor: pointer;
+                transition: transform 120ms ease, opacity 120ms ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                justify-content: center;
+            }
+
+            .copy-btn:hover { transform: translateY(-1px); }
+            .demo-note { color: #9ca9c0; font-size: 12px; }
+
+            .demo-game {
+                position: relative;
+                border: none;
+                border-radius: 0;
+                background: transparent;
+                padding: 0;
+                min-height: 0;
+            }
+
+            .demo-game canvas {
+                width: 100%;
+                max-width: 520px;
+                aspect-ratio: 1;
+                display: block;
+                margin: 0 auto;
+                background: transparent !important;
+                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.18);
+            }
+
+            .demo-lock {
+                position: absolute;
+                inset: 0;
+                border-radius: 12px;
+                background: rgba(0, 0, 0, 0.72);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 18px;
+                color: #cbd3e3;
+                font-size: 14px;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 160ms ease;
+            }
+
+            .demo-lock.visible { opacity: 1; pointer-events: auto; }
+            .demo-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; color: #9ca9c0; }
+            .demo-score { display: flex; gap: 10px; font-weight: 700; color: #eef2f8; }
         </style>
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
     
@@ -497,6 +701,68 @@
             </div>
         </div>
 
+        <div id="demo-page" role="presentation">
+            <div id="demo-portal-overlay" role="dialog" aria-modal="true" aria-labelledby="demo-portal-title">
+                <div id="demo-portal-modal" role="document">
+                    <button id="demo-portal-close" class="portal-close" aria-label="Close portal">&times;</button>
+                    <h3 id="demo-portal-title">Demo login</h3>
+                    <p>Authenticate with a micro-payment to unlock the demo experience.</p>
+                    <label for="demo-portal-wallet" style="font-size: 14px; color: #eef2f8;">Your wallet address</label>
+                    <input id="demo-portal-wallet" class="portal-input" type="text" autocomplete="off" placeholder="Enter your wallet address" />
+                    <div class="portal-actions">
+                        <button class="portal-btn primary" data-demo-portal-start>Login via micro-transaction</button>
+                    </div>
+                    <div id="demo-portal-step" style="display:none; margin-top: 12px;">
+                        <div class="demo-instructions">
+                            <div class="demo-instructions-header">
+                                <div>
+                                    <div class="demo-chip">Payment instructions</div>
+                                    <p class="demo-body" style="margin-bottom: 0;">Send the micro-payment below to verify your wallet ownership.</p>
+                                </div>
+                                <div class="demo-qr" aria-hidden="true">QR code</div>
+                            </div>
+                            <div class="demo-pay-rows">
+                                <div class="demo-pay-row">
+                                    <div>
+                                        <div class="demo-pay-label">Send to</div>
+                                        <div class="demo-pay-value" id="demo-portal-receiver">—</div>
+                                    </div>
+                                    <button class="copy-btn" type="button" data-copy-target="demo-portal-receiver">Copy</button>
+                                </div>
+                                <div class="demo-pay-row">
+                                    <div>
+                                        <div class="demo-pay-label">Amount</div>
+                                        <div class="demo-pay-value" id="demo-portal-amount">—</div>
+                                    </div>
+                                    <button class="copy-btn" type="button" data-copy-target="demo-portal-amount">Copy</button>
+                                </div>
+                            </div>
+                            <div class="demo-note">Once the payment confirms, your session unlocks automatically.</div>
+                        </div>
+                        <div class="portal-actions" style="margin-top: 10px;">
+                            <button class="portal-btn primary" data-demo-portal-action="micro-auth">Confirm &amp; verify</button>
+                        </div>
+                    </div>
+                    <div class="portal-status" id="demo-portal-status"></div>
+                </div>
+            </div>
+
+            <div class="demo-shell game-only" role="region" aria-labelledby="demo-title">
+                <div class="demo-right">
+                    <div class="demo-meta">
+                        <span id="demo-title">Snake mini-game</span>
+                        <span class="demo-score">Points: <span id="demo-points">0</span> | Score: <span id="demo-score">0</span> | Best: <span id="demo-best">0</span></span>
+                    </div>
+                    <div class="demo-game">
+                        <canvas id="demo-canvas" width="520" height="520" aria-label="Snake game"></canvas>
+                        <div id="demo-lock" class="demo-lock visible">
+                            Authenticate via the portal to unlock the game.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             (() => {
                 const overlay = document.getElementById("portal-overlay");
@@ -544,9 +810,9 @@
 
                 // Replace these placeholders with your actual receiver and amount
                 const RECEIVER_ADDRESS = "SAFUtzJsoJFtnKXLRZVYDgNosYfzXqkxhWwAtA9NPpB";
-                const AMOUNT_DISPLAY = "0.00008 SOL";
+                const AMOUNT_DISPLAY = "0.000007 SOL";
                 const TOKEN_SYMBOL = "SOL";
-                const AMOUNT_LAMPORTS = 80000; // 0.00008 SOL (backend min 70k for headroom)
+                const AMOUNT_LAMPORTS = 7000; // 0.000007 SOL
 
                 const defaultSummary = () => {
                     if (receiverSpan) receiverSpan.textContent = RECEIVER_ADDRESS;
@@ -754,10 +1020,32 @@
                     statusEl.style.color = isError ? "#ffb4b4" : "#9ca9c0";
                 };
 
+                const copyValue = async (targetId, buttonEl) => {
+                    const source = document.getElementById(targetId);
+                    const value = (source?.textContent || source?.value || "").trim();
+                    if (!value) {
+                        setStatus("Nothing to copy.", true);
+                        return;
+                    }
+                    try {
+                        await navigator.clipboard.writeText(value);
+                        if (buttonEl) {
+                            const original = buttonEl.textContent || "Copy";
+                            buttonEl.textContent = "Copied";
+                            setTimeout(() => (buttonEl.textContent = original), 1200);
+                        }
+                        setStatus("Copied.");
+                    } catch (err) {
+                        console.warn("copy failed", err);
+                        setStatus("Unable to copy.", true);
+                    }
+                };
+
                 const renderInfo = (info) => {
                     userEl.textContent = info?.wallet || cachedWallet || "Not signed in";
                     projectEl.textContent = info?.project?.name || "—";
-                    keyEl.textContent = info?.apiKey?.id || cachedKey || "—";
+                    const apiKeyVal = info?.apiKey?.key || info?.apiKey?.id || cachedKey;
+                    keyEl.textContent = apiKeyVal || "—";
                     minEl.textContent = info?.project?.minLamports ? `${info.project.minLamports} lamports` : "—";
                 };
 
@@ -774,8 +1062,8 @@
                     }
                 };
 
-                const persistKey = (keyId) => {
-                    cachedKey = keyId || "";
+                const persistKey = (keyVal) => {
+                    cachedKey = keyVal || "";
                     if (cachedKey) {
                         localStorage.setItem("safuApiKey", cachedKey);
                     } else {
@@ -804,7 +1092,7 @@
                         }
                         const data = await res.json();
                         renderInfo({ ...data, wallet: cachedWallet });
-                        if (data?.apiKey?.id) persistKey(data.apiKey.id);
+                        if (data?.apiKey?.key || data?.apiKey?.id) persistKey(data.apiKey.key || data.apiKey.id);
                         setStatus("Profile loaded");
                     } catch (err) {
                         console.error("fetchMe", err);
@@ -826,7 +1114,7 @@
                         });
                         if (!res.ok) throw new Error("Rotate failed");
                         const data = await res.json();
-                        persistKey(data?.apiKey?.id);
+                        persistKey(data?.apiKey?.key || data?.apiKey?.id);
                         renderInfo({ apiKey: data.apiKey, project: { name: projectEl.textContent }, wallet: cachedWallet });
                         setStatus("Key rotated");
                     } catch (err) {
@@ -902,7 +1190,7 @@
                     data = { ok: res.ok, message: text || undefined };
                 }
 
-                // Expect backend to have validated: sender == walletAddress, receiver == SAFU address, amount == 0.00005 SOL, recent window.
+                // Expect backend to have validated: sender == walletAddress, receiver == SAFU address, amount == 0.000007 SOL, recent window.
                 if (!res.ok || !data || data.ok !== true) {
                     throw new Error(data?.message || "Login failed");
                 }
@@ -914,6 +1202,497 @@
 
                 return data;
             };
+        </script>
+
+        <script>
+            (() => {
+                const demoPage = document.getElementById("demo-page");
+                if (!demoPage) return;
+
+                const shell = demoPage.querySelector(".demo-shell");
+                const overlay = document.getElementById("demo-portal-overlay");
+                const closeBtn = document.getElementById("demo-portal-close");
+                const startBtn = document.querySelector("[data-demo-portal-start]");
+                const confirmBtn = document.querySelector('[data-demo-portal-action="micro-auth"]');
+                const statusEl = document.getElementById("demo-portal-status");
+                const walletInput = document.getElementById("demo-portal-wallet");
+                const stepContainer = document.getElementById("demo-portal-step");
+                const receiverSpan = document.getElementById("demo-portal-receiver");
+                const amountSpan = document.getElementById("demo-portal-amount");
+                const lockOverlay = document.getElementById("demo-lock");
+                const canvas = document.getElementById("demo-canvas");
+                const scoreEl = document.getElementById("demo-score");
+                const pointsEl = document.getElementById("demo-points");
+                const bestEl = document.getElementById("demo-best");
+
+                const API_BASE = (window.__SAFU_API_BASE__ || "").replace(/\/$/, "");
+                const api = (path) => `${API_BASE}${path}`;
+                const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+                let sessionToken = localStorage.getItem("safuSession") || "";
+                let apiKey = localStorage.getItem("safuApiKey") || "";
+                let cachedWallet = localStorage.getItem("safuWallet") || "";
+                let activeChallenge = null;
+                let lockedWallet = "";
+                let countdownInterval = null;
+                let isActive = false;
+
+                // Game state
+                const ctx = canvas?.getContext("2d");
+                const cell = 20;
+                const grid = 20;
+                const boardSize = cell * grid;
+                if (canvas) {
+                    canvas.width = boardSize;
+                    canvas.height = boardSize;
+                }
+                let snake = [];
+                let dir = { x: 1, y: 0 };
+                let food = { x: 5, y: 5 };
+                let loopId = null;
+                let score = 0;
+                let best = Number(localStorage.getItem("safuDemoBest") || 0) || 0;
+
+                const setStatus = (msg, isError = false) => {
+                    if (!statusEl) return;
+                    statusEl.textContent = msg || "";
+                    statusEl.style.color = isError ? "#ffb4b4" : "#9ca9c0";
+                };
+
+                const copyValue = async (targetId, buttonEl) => {
+                    const source = document.getElementById(targetId);
+                    const value = (source?.textContent || source?.value || "").trim();
+                    if (!value) {
+                        setStatus("Nothing to copy.", true);
+                        return;
+                    }
+                    try {
+                        await navigator.clipboard.writeText(value);
+                        if (buttonEl) {
+                            const original = buttonEl.textContent || "Copy";
+                            buttonEl.textContent = "Copied";
+                            setTimeout(() => (buttonEl.textContent = original), 1200);
+                        }
+                        setStatus("Copied.");
+                    } catch (err) {
+                        console.warn("copy failed", err);
+                        setStatus("Unable to copy.", true);
+                    }
+                };
+
+                const lamportsToSolDisplay = (lamports) => {
+                    if (!Number.isFinite(lamports)) return "0.000007 SOL";
+                    const sol = lamports / 1_000_000_000;
+                    return `${sol.toFixed(8).replace(/0+$/, "").replace(/\.$/, "")} SOL`;
+                };
+
+                const defaultSummary = () => {
+                    if (receiverSpan) receiverSpan.textContent = "SAFUtzJsoJFtnKXLRZVYDgNosYfzXqkxhWwAtA9NPpB";
+                    if (amountSpan) amountSpan.textContent = "0.000007 SOL";
+                };
+
+                defaultSummary();
+
+                const authHeaders = () => (sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {});
+
+                const persistSession = (token, wallet) => {
+                    sessionToken = token || "";
+                    cachedWallet = wallet || cachedWallet;
+                    if (sessionToken) {
+                        localStorage.setItem("safuSession", sessionToken);
+                    } else {
+                        localStorage.removeItem("safuSession");
+                    }
+                    if (cachedWallet) {
+                        localStorage.setItem("safuWallet", cachedWallet);
+                        if (walletInput) walletInput.value = cachedWallet;
+                    }
+                };
+
+                const persistKey = (keyVal) => {
+                    apiKey = keyVal || apiKey;
+                    if (apiKey) {
+                        localStorage.setItem("safuApiKey", apiKey);
+                    }
+                };
+
+                const updateChallengeSummary = (challenge) => {
+                    if (!challenge) return defaultSummary();
+                    if (receiverSpan) receiverSpan.textContent = challenge.recipient || receiverSpan.textContent;
+                    if (amountSpan) amountSpan.textContent = lamportsToSolDisplay(challenge.amountLamports);
+                };
+
+                const pollAuthOnce = async (challengeId) => {
+                    const res = await fetch(api(`/api/poll-auth?id=${encodeURIComponent(challengeId)}`), { credentials: "include" });
+                    if (!res.ok) throw new Error("Polling failed");
+                    return res.json();
+                };
+
+                const waitForAuth = async (challengeId) => {
+                    const maxAttempts = 60;
+                    for (let i = 0; i < maxAttempts; i++) {
+                        const data = await pollAuthOnce(challengeId);
+                        if (data.status === "authenticated") return data;
+                        if (data.status === "expired") throw new Error("Challenge expired. Please retry.");
+                        await sleep(2000);
+                    }
+                    throw new Error("Timeout waiting for authentication.");
+                };
+
+                const ensureChallenge = async () => {
+                    if (!apiKey) return null;
+                    try {
+                        const res = await fetch(api("/api/challenge"), {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json", "x-api-key": apiKey },
+                            credentials: "include",
+                        });
+                        if (!res.ok) throw new Error("challenge_failed");
+                        const data = await res.json();
+                        activeChallenge = data;
+                        updateChallengeSummary(data);
+                        return data;
+                    } catch (err) {
+                        console.warn("demo ensureChallenge", err);
+                        activeChallenge = null;
+                        defaultSummary();
+                        return null;
+                    }
+                };
+
+                const fetchProfile = async () => {
+                    if (!sessionToken) {
+                        lockGame();
+                        return;
+                    }
+                    try {
+                        await fetch(api("/api/wallet/bootstrap"), { method: "POST", headers: { ...authHeaders() } }).catch(() => {});
+                        const res = await fetch(api("/api/wallet/me"), { headers: { ...authHeaders() } });
+                        if (!res.ok) {
+                            if (res.status === 401) {
+                                persistSession("", "");
+                            }
+                            throw new Error("Unable to load profile");
+                        }
+                        const data = await res.json();
+                        if (data?.apiKey?.key || data?.apiKey?.id) persistKey(data.apiKey.key || data.apiKey.id);
+                        setStatus("Authenticated. Game unlocked!");
+                        showGameState();
+                        unlockGame();
+                    } catch (err) {
+                        console.error("demo fetchMe", err);
+                        setStatus(err?.message || "Failed to load", true);
+                        lockGame();
+                    }
+                };
+
+                const startCountdown = (seconds) => {
+                    if (countdownInterval) clearInterval(countdownInterval);
+                    let remaining = seconds;
+                    const tick = () => {
+                        const disp = amountSpan?.textContent || "0.000007 SOL";
+                        setStatus(`Send ${disp} to continue. Time left: ${remaining}s`);
+                        remaining -= 1;
+                        if (remaining < 0) {
+                            clearInterval(countdownInterval);
+                            countdownInterval = null;
+                            setStatus("Timed out. Please retry.", true);
+                            showPortalState();
+                        }
+                    };
+                    tick();
+                    countdownInterval = setInterval(tick, 1000);
+                };
+
+                const runAuth = async () => {
+                    const walletAddress = lockedWallet || walletInput?.value?.trim() || cachedWallet;
+                    if (!walletAddress) {
+                        setStatus("Please enter your wallet address.", true);
+                        walletInput?.focus();
+                        return;
+                    }
+
+                    setStatus("Preparing challenge...");
+
+                    try {
+                        const RECEIVER_ADDRESS = "SAFUtzJsoJFtnKXLRZVYDgNosYfzXqkxhWwAtA9NPpB";
+                        const AMOUNT_LAMPORTS = 7000;
+                        const challenge = activeChallenge || (await ensureChallenge());
+                        const receiver = challenge?.recipient || RECEIVER_ADDRESS;
+                        const amtLamports = Number(challenge?.amountLamports) || AMOUNT_LAMPORTS;
+                        const amtDisplay = challenge ? lamportsToSolDisplay(amtLamports) : "0.000007 SOL";
+
+                        if (!challenge) {
+                            defaultSummary();
+                        }
+
+                        const payload = { walletAddress, receiver, amount: amtDisplay, amountLamports: amtLamports, token: "SOL" };
+
+                        let result = null;
+                        if (typeof window.startMicroTransaction === "function") {
+                            result = await window.startMicroTransaction(payload);
+                        } else if (typeof window.microTxLogin === "function") {
+                            result = await window.microTxLogin(payload);
+                        }
+
+                        const challengeId = challenge?.id || result?.challengeId || result?.id || null;
+                        if (!challengeId) throw new Error("Missing challenge id. Add your API key in dashboard.");
+
+                        setStatus("Awaiting backend confirmation...");
+                        const authData = await waitForAuth(challengeId);
+                        if (countdownInterval) {
+                            clearInterval(countdownInterval);
+                            countdownInterval = null;
+                        }
+                        if (authData?.sessionToken) persistSession(authData.sessionToken, authData?.userPubkey || walletAddress);
+                        if (authData?.userPubkey) cachedWallet = authData.userPubkey;
+                        setStatus("Authenticated. Game unlocked!");
+                        showGameState();
+                        unlockGame();
+                    } catch (err) {
+                        console.error("demo auth", err);
+                        setStatus(err?.message || "Transaction not detected. Please retry.", true);
+                        showPortalState();
+                        lockGame();
+                    }
+                };
+
+                // Game helpers
+                const updateScore = () => {
+                    scoreEl.textContent = score;
+                    if (pointsEl) pointsEl.textContent = String(score * 10);
+                    if (score > best) {
+                        best = score;
+                        localStorage.setItem("safuDemoBest", String(best));
+                    }
+                    bestEl.textContent = best;
+                };
+
+                const spawnFood = () => {
+                    const openCells = [];
+                    for (let x = 0; x < grid; x++) {
+                        for (let y = 0; y < grid; y++) {
+                            if (!snake.some((s) => s.x === x && s.y === y)) openCells.push({ x, y });
+                        }
+                    }
+                    food = openCells[Math.floor(Math.random() * openCells.length)] || { x: 5, y: 5 };
+                };
+
+                const resetGame = () => {
+                    snake = [{ x: Math.floor(grid / 2), y: Math.floor(grid / 2) }];
+                    dir = { x: 1, y: 0 };
+                    score = 0;
+                    spawnFood();
+                    updateScore();
+                    draw();
+                };
+
+                const draw = () => {
+                    if (!ctx || !canvas) return;
+                    ctx.clearRect(0, 0, boardSize, boardSize);
+
+                    ctx.fillStyle = "#6f3fb3";
+                    for (const segment of snake) {
+                        ctx.fillRect(segment.x * cell, segment.y * cell, cell - 1, cell - 1);
+                    }
+
+                    ctx.fillStyle = "#5ce0a2";
+                    ctx.fillRect(food.x * cell, food.y * cell, cell - 1, cell - 1);
+                };
+
+                const step = () => {
+                    if (!isActive || lockOverlay?.classList.contains("visible")) return;
+                    const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+                    if (head.x < 0 || head.y < 0 || head.x >= grid || head.y >= grid || snake.some((s) => s.x === head.x && s.y === head.y)) {
+                        resetGame();
+                        return;
+                    }
+
+                    snake.unshift(head);
+                    if (head.x === food.x && head.y === food.y) {
+                        score += 1;
+                        updateScore();
+                        spawnFood();
+                    } else {
+                        snake.pop();
+                    }
+                    draw();
+                };
+
+                const startLoop = () => {
+                    if (loopId) return;
+                    loopId = setInterval(step, 120);
+                };
+
+                const stopLoop = () => {
+                    if (loopId) {
+                        clearInterval(loopId);
+                        loopId = null;
+                    }
+                };
+
+                const lockGame = () => {
+                    lockOverlay?.classList.add("visible");
+                    stopLoop();
+                };
+
+                const unlockGame = () => {
+                    lockOverlay?.classList.remove("visible");
+                    startLoop();
+                };
+
+                function showPortalState() {
+                    isActive = true;
+                    demoPage.classList.add("active");
+                    shell?.classList.add("portal-only");
+                    shell?.classList.remove("game-only");
+                    overlay?.classList.add("active");
+                    overlay?.setAttribute("aria-hidden", "false");
+                    if (countdownInterval) {
+                        clearInterval(countdownInterval);
+                        countdownInterval = null;
+                    }
+                    if (walletInput) {
+                        walletInput.disabled = false;
+                        walletInput.value = cachedWallet || "";
+                    }
+                    if (stepContainer) stepContainer.style.display = "none";
+                    if (startBtn) startBtn.style.display = "inline-flex";
+                    if (confirmBtn) confirmBtn.style.display = "inline-flex";
+                    lockedWallet = "";
+                    setStatus("");
+                    lockGame();
+                }
+
+                function showGameState() {
+                    isActive = true;
+                    demoPage.classList.add("active");
+                    shell?.classList.add("game-only");
+                    shell?.classList.remove("portal-only");
+                    overlay?.classList.remove("active");
+                    overlay?.setAttribute("aria-hidden", "true");
+                }
+
+                function hideDemo() {
+                    isActive = false;
+                    demoPage.classList.remove("active");
+                    overlay?.classList.remove("active");
+                    stopLoop();
+                }
+
+                function openDemo() {
+                    showPortalState();
+                    defaultSummary();
+                    resetGame();
+                    lockGame();
+                }
+
+                const shouldOpenFromLocation = () => {
+                    const path = (window.location.pathname || "").toLowerCase();
+                    const search = (window.location.search || "").toLowerCase();
+                    const hash = (window.location.hash || "").toLowerCase();
+                    return path.endsWith("/page") || hash.includes("demo") || search.includes("demo");
+                };
+
+                document.addEventListener("click", (event) => {
+                    const anchor = event.target.closest("a, button");
+                    if (!anchor) return;
+
+                    const copyBtn = anchor.closest("[data-copy-target]");
+                    if (copyBtn) {
+                        event.preventDefault();
+                        const targetId = copyBtn.getAttribute("data-copy-target") || "";
+                        copyValue(targetId, copyBtn);
+                        return;
+                    }
+
+                    const label = (anchor.textContent || "").trim().toLowerCase();
+                    if (anchor.dataset.demoTrigger === "true" || label.includes("try the demo")) {
+                        event.preventDefault();
+                        if (!window.location.pathname.endsWith("/page")) {
+                            window.history.pushState({}, "", "/page");
+                        }
+                        openDemo();
+                        // Prevent page scroll jumps when opening demo
+                        document.body.style.overflow = "hidden";
+                        window.scrollTo({ top: 0, behavior: "instant" });
+                    }
+                });
+
+                window.addEventListener("popstate", () => {
+                    if (shouldOpenFromLocation()) {
+                        openDemo();
+                        document.body.style.overflow = "hidden";
+                        window.scrollTo({ top: 0, behavior: "instant" });
+                    } else {
+                        hideDemo();
+                        document.body.style.overflow = "";
+                    }
+                });
+
+                startBtn?.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const candidate = walletInput?.value?.trim();
+                    if (!candidate) {
+                        setStatus("Please enter your wallet address.", true);
+                        walletInput?.focus();
+                        return;
+                    }
+                    lockedWallet = candidate;
+                    if (walletInput) {
+                        walletInput.value = lockedWallet;
+                        walletInput.disabled = true;
+                    }
+                    if (stepContainer) stepContainer.style.display = "block";
+                    if (startBtn) startBtn.style.display = "none";
+                    if (confirmBtn) confirmBtn.style.display = "none";
+                    startCountdown(120);
+                    ensureChallenge().then(() => runAuth());
+                });
+
+                confirmBtn?.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    runAuth();
+                });
+
+                closeBtn?.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    hideDemo();
+                    if (window.location.pathname.endsWith("/page")) {
+                        window.history.pushState({}, "", "/");
+                    }
+                    document.body.style.overflow = "";
+                });
+
+                document.addEventListener("keydown", (event) => {
+                    if (!isActive) return;
+                    const map = { ArrowUp: { x: 0, y: -1 }, ArrowDown: { x: 0, y: 1 }, ArrowLeft: { x: -1, y: 0 }, ArrowRight: { x: 1, y: 0 } };
+                    const next = map[event.key];
+                    if (!next) return;
+
+                    const portalOpen = overlay?.classList.contains("active");
+                    const targetIsInput = event.target instanceof HTMLElement && (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA");
+                    if (!targetIsInput) {
+                        event.preventDefault();
+                    } else if (!portalOpen) {
+                        event.preventDefault();
+                    }
+
+                    if (!(next.x === -dir.x && next.y === -dir.y)) {
+                        dir = next;
+                    }
+                });
+
+                resetGame();
+                if (shouldOpenFromLocation()) {
+                    openDemo();
+                    document.body.style.overflow = "hidden";
+                    window.scrollTo({ top: 0, behavior: "instant" });
+                } else {
+                    hideDemo();
+                    document.body.style.overflow = "";
+                }
+            })();
         </script>
 
         <script>
@@ -1258,6 +2037,10 @@ if (typeof window !== "undefined") {
                 }
             } catch (error) {
                 handleError(error, undefined, false)
+                        if (countdownInterval) {
+                            clearInterval(countdownInterval);
+                            countdownInterval = null;
+                        }
                 throw error
             }
         }
@@ -1274,6 +2057,800 @@ if (typeof window !== "undefined") {
                     React.createElement(React.Suspense, {}, React.createElement(React.lazy(() => import("__framer-badge"))))
                 )
             })
+        })()
+    </script>
+    <script>
+        (() => {
+            const authCard = {
+                badge: "On-chain Auth",
+                title: "Prove real users on-chain",
+                body: "Dust-cost challenges verify a live wallet and return a signed session attestation you can reuse across your Solana stack. No captchas, no PII, just portable trust.",
+                highlights: ["Dust challenge", "Session attestations"],
+                id: "workflow-automation",
+            }
+
+            const aiCard = {
+                badge: "AI Assistant",
+                title: "Safer than wallet signatures",
+                body: "We skip permissioned signature prompts. Ownership is proven with a tiny manual balance-change transaction, so there's no lingering approval risk--just a portable session proof you can reuse across your stack.",
+                highlights: ["No approvals", "Balance-change proof", "Reusable session"],
+                id: "ai-assistant",
+            }
+
+            const salesCard = {
+                badge: "Integration",
+                title: "API + portal: ship fast",
+                body: "Trigger micro-auth via API/SDK, fetch signed session attestations, and manage receiver amounts, keys, and logs in the admin portal.",
+                highlights: ["API & SDK", "Attestation fetch", "Admin controls"],
+                id: "sales-and-marketing",
+            }
+
+            const customCard = {
+                badge: "Token utility",
+                title: "Fuel for auth + growth",
+                body: "The token underwrites infra so micro-auth stays free to use, covers attestation settlement, and funds ongoing R&D and ops to keep the SAFU stack hardened.",
+                highlights: ["Free-to-use auth", "Sustainability pool", "Ecosystem alignment"],
+                id: "custom-projects",
+            }
+
+            const updateCard = (cfg) => {
+                const card = document.getElementById(cfg.id)
+                if (!card) return false
+
+                const badge = card.querySelector('[data-framer-name="Badge"] p')
+                if (badge) badge.textContent = cfg.badge
+
+                const title = card.querySelector("h3")
+                if (title) title.textContent = cfg.title
+
+                const textBlock = card.querySelector('[data-framer-name="Text"]')
+                const body = textBlock?.querySelector("p")
+                if (body) body.textContent = cfg.body
+
+                const highlightNodes = card.querySelectorAll('[data-framer-name="Highlights"] [data-framer-name="Badge"] p')
+                cfg.highlights.forEach((value, index) => {
+                    const node = highlightNodes[index]
+                    if (node) node.textContent = value
+                })
+
+                return true
+            }
+
+            const applyPatch = () => updateCard(authCard) && updateCard(aiCard) && updateCard(salesCard) && updateCard(customCard)
+
+            const run = () => {
+                if (applyPatch()) return
+                let attempts = 0
+                const timer = setInterval(() => {
+                    attempts += 1
+                    if (applyPatch() || attempts > 40) {
+                        clearInterval(timer)
+                    }
+                }, 300)
+            }
+
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                run()
+            } else {
+                document.addEventListener("DOMContentLoaded", run)
+            }
+        })()
+    </script>
+    <script>
+        (() => {
+            const targetSelector = '#sales-and-marketing [data-framer-name="graphics"]'
+            const animationSrc = "graphics/prove.gif"
+            const stillSrc = "graphics/prove.png"
+            const estimatedDurationMs = 3200 // tune if animation length changes
+            const startDelayMs = 0 // wait after visibility before playing
+
+            let stillAvailable = false
+            const preloadStill = () => {
+                const probe = new Image()
+                probe.onload = () => {
+                    stillAvailable = true
+                }
+                probe.onerror = () => {
+                    stillAvailable = false
+                }
+                probe.src = stillSrc
+            }
+            preloadStill()
+
+            const upsertImage = () => {
+                const holder = document.querySelector(targetSelector)
+                if (!holder) return false
+
+                holder.style.padding = "0"
+                holder.style.position = "relative"
+                holder.style.overflow = "hidden"
+
+                const existing = holder.querySelector('img[data-custom-image="prove"]')
+                const img = existing ?? document.createElement("img")
+                img.dataset.customImage = "prove"
+                img.alt = "Prove real users on-chain graphic"
+                img.loading = "lazy"
+                img.style.width = "100%"
+                img.style.height = "100%"
+                img.style.display = "block"
+                img.style.position = "absolute"
+                img.style.top = "0"
+                img.style.left = "0"
+                img.style.objectFit = "cover"
+                img.style.objectPosition = "center"
+                img.dataset.played = img.dataset.played ?? "false"
+
+                if (!existing) holder.appendChild(img)
+
+                return true
+            }
+
+            const playOnceOnView = () => {
+                const holder = document.querySelector(targetSelector)
+                const img = holder?.querySelector('img[data-custom-image="prove"]')
+                if (!holder || !img) return
+
+                const start = () => {
+                    if (img.dataset.played === "true") return
+                    img.dataset.played = "true"
+                    setTimeout(() => {
+                        img.src = animationSrc
+                        img.onerror = () => {
+                            if (stillAvailable) img.src = stillSrc
+                        }
+                        setTimeout(() => {
+                            if (stillAvailable) img.src = stillSrc
+                        }, estimatedDurationMs)
+                    }, startDelayMs)
+                }
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            start()
+                            observer.disconnect()
+                        }
+                    })
+                }, { threshold: 0.25 })
+
+                observer.observe(holder)
+            }
+
+            const run = () => {
+                if (upsertImage()) {
+                    playOnceOnView()
+                    return
+                }
+                let attempts = 0
+                const timer = setInterval(() => {
+                    attempts += 1
+                    if (upsertImage()) {
+                        playOnceOnView()
+                        clearInterval(timer)
+                    }
+                    if (attempts > 40) {
+                        clearInterval(timer)
+                    }
+                }, 250)
+            }
+
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                run()
+            } else {
+                document.addEventListener("DOMContentLoaded", run)
+            }
+        })()
+    </script>
+    <script>
+        (() => {
+            const targetSelector = '#workflow-automation [data-framer-name="graphics"]'
+            const animationSrc = "graphics/users.gif"
+            const stillSrc = "graphics/users.png"
+            const estimatedDurationMs = 3200 // tune if animation length changes
+            const startDelayMs = 0 // wait after visibility before playing
+
+            let stillAvailable = false
+            const preloadStill = () => {
+                const probe = new Image()
+                probe.onload = () => {
+                    stillAvailable = true
+                }
+                probe.onerror = () => {
+                    stillAvailable = false
+                }
+                probe.src = stillSrc
+            }
+            preloadStill()
+
+            const upsertImage = () => {
+                const holder = document.querySelector(targetSelector)
+                if (!holder) return false
+
+                holder.style.padding = "0"
+                holder.style.position = "relative"
+                holder.style.overflow = "hidden"
+
+                const existing = holder.querySelector('img[data-custom-image="prove-up"]')
+                const img = existing ?? document.createElement("img")
+                img.dataset.customImage = "prove-up"
+                img.alt = "Prove real users on-chain graphic"
+                img.loading = "lazy"
+                img.style.width = "100%"
+                img.style.height = "100%"
+                img.style.display = "block"
+                img.style.position = "absolute"
+                img.style.top = "0"
+                img.style.left = "0"
+                img.style.objectFit = "cover"
+                img.style.objectPosition = "center"
+                img.dataset.played = img.dataset.played ?? "false"
+
+                if (!existing) holder.appendChild(img)
+
+                return true
+            }
+
+            const playOnceOnView = () => {
+                const holder = document.querySelector(targetSelector)
+                const img = holder?.querySelector('img[data-custom-image="prove-up"]')
+                if (!holder || !img) return
+
+                const start = () => {
+                    if (img.dataset.played === "true") return
+                    img.dataset.played = "true"
+                    setTimeout(() => {
+                        img.src = animationSrc
+                        img.onerror = () => {
+                            if (stillAvailable) img.src = stillSrc
+                        }
+                        setTimeout(() => {
+                            if (stillAvailable) img.src = stillSrc
+                        }, estimatedDurationMs)
+                    }, startDelayMs)
+                }
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            start()
+                            observer.disconnect()
+                        }
+                    })
+                }, { threshold: 0.25 })
+
+                observer.observe(holder)
+            }
+
+            const run = () => {
+                if (upsertImage()) {
+                    playOnceOnView()
+                    return
+                }
+                let attempts = 0
+                const timer = setInterval(() => {
+                    attempts += 1
+                    if (upsertImage()) {
+                        playOnceOnView()
+                        clearInterval(timer)
+                    }
+                    if (attempts > 40) {
+                        clearInterval(timer)
+                    }
+                }, 250)
+            }
+
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                run()
+            } else {
+                document.addEventListener("DOMContentLoaded", run)
+            }
+        })()
+    </script>
+    <script>
+        (() => {
+            const targetSelector = '#ai-assistant [data-framer-name="graphics"]'
+            const animationSrc = "graphics/safer.gif"
+            const stillSrc = "graphics/safer.png"
+            const estimatedDurationMs = 3200 // tune if animation length changes
+            const startDelayMs = 0 // wait after visibility before playing
+
+            let stillAvailable = false
+            const preloadStill = () => {
+                const probe = new Image()
+                probe.onload = () => {
+                    stillAvailable = true
+                }
+                probe.onerror = () => {
+                    stillAvailable = false
+                }
+                probe.src = stillSrc
+            }
+            preloadStill()
+
+            const upsertImage = () => {
+                const holder = document.querySelector(targetSelector)
+                if (!holder) return false
+
+                holder.style.padding = "0"
+                holder.style.position = "relative"
+                holder.style.overflow = "hidden"
+
+                const existing = holder.querySelector('img[data-custom-image="safer"]')
+                const img = existing ?? document.createElement("img")
+                img.dataset.customImage = "safer"
+                img.alt = "Safer than wallet signatures graphic"
+                img.loading = "lazy"
+                img.style.width = "100%"
+                img.style.height = "100%"
+                img.style.display = "block"
+                img.style.position = "absolute"
+                img.style.top = "0"
+                img.style.left = "0"
+                img.style.objectFit = "cover"
+                img.style.objectPosition = "center"
+                img.dataset.played = img.dataset.played ?? "false"
+
+                if (!existing) holder.appendChild(img)
+
+                return true
+            }
+
+            const playOnceOnView = () => {
+                const holder = document.querySelector(targetSelector)
+                const img = holder?.querySelector('img[data-custom-image="safer"]')
+                if (!holder || !img) return
+
+                const start = () => {
+                    if (img.dataset.played === "true") return
+                    img.dataset.played = "true"
+                    setTimeout(() => {
+                        img.src = animationSrc
+                        img.onerror = () => {
+                            if (stillAvailable) img.src = stillSrc
+                        }
+                        setTimeout(() => {
+                            if (stillAvailable) img.src = stillSrc
+                        }, estimatedDurationMs)
+                    }, startDelayMs)
+                }
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            start()
+                            observer.disconnect()
+                        }
+                    })
+                }, { threshold: 0.25 })
+
+                observer.observe(holder)
+            }
+
+            const run = () => {
+                if (upsertImage()) {
+                    playOnceOnView()
+                    return
+                }
+                let attempts = 0
+                const timer = setInterval(() => {
+                    attempts += 1
+                    if (upsertImage()) {
+                        playOnceOnView()
+                        clearInterval(timer)
+                    }
+                    if (attempts > 40) {
+                        clearInterval(timer)
+                    }
+                }, 250)
+            }
+
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                run()
+            } else {
+                document.addEventListener("DOMContentLoaded", run)
+            }
+        })()
+    </script>
+    <script>
+        (() => {
+            const targetSelector = '#custom-projects [data-framer-name="graphics"]'
+            const animationSrc = "graphics/token.gif"
+            const stillSrc = "graphics/token.png"
+            const estimatedDurationMs = 3200 // tune if animation length changes
+            const startDelayMs = 0 // wait after visibility before playing
+
+            let stillAvailable = false
+            const preloadStill = () => {
+                const probe = new Image()
+                probe.onload = () => {
+                    stillAvailable = true
+                }
+                probe.onerror = () => {
+                    stillAvailable = false
+                }
+                probe.src = stillSrc
+            }
+            preloadStill()
+
+            const upsertImage = () => {
+                const holder = document.querySelector(targetSelector)
+                if (!holder) return false
+
+                holder.style.padding = "0"
+                holder.style.position = "relative"
+                holder.style.overflow = "hidden"
+
+                const existing = holder.querySelector('img[data-custom-image="token"]')
+                const img = existing ?? document.createElement("img")
+                img.dataset.customImage = "token"
+                img.alt = "Token utility graphic"
+                img.loading = "lazy"
+                img.style.width = "100%"
+                img.style.height = "100%"
+                img.style.display = "block"
+                img.style.position = "absolute"
+                img.style.top = "0"
+                img.style.left = "0"
+                img.style.objectFit = "cover"
+                img.style.objectPosition = "center"
+                img.dataset.played = img.dataset.played ?? "false"
+
+                if (!existing) holder.appendChild(img)
+
+                return true
+            }
+
+            const playOnceOnView = () => {
+                const holder = document.querySelector(targetSelector)
+                const img = holder?.querySelector('img[data-custom-image="token"]')
+                if (!holder || !img) return
+
+                const start = () => {
+                    if (img.dataset.played === "true") return
+                    img.dataset.played = "true"
+                    setTimeout(() => {
+                        img.src = animationSrc
+                        img.onerror = () => {
+                            if (stillAvailable) img.src = stillSrc
+                        }
+                        setTimeout(() => {
+                            if (stillAvailable) img.src = stillSrc
+                        }, estimatedDurationMs)
+                    }, startDelayMs)
+                }
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            start()
+                            observer.disconnect()
+                        }
+                    })
+                }, { threshold: 0.25 })
+
+                observer.observe(holder)
+            }
+
+            const run = () => {
+                if (upsertImage()) {
+                    playOnceOnView()
+                    return
+                }
+                let attempts = 0
+                const timer = setInterval(() => {
+                    attempts += 1
+                    if (upsertImage()) {
+                        playOnceOnView()
+                        clearInterval(timer)
+                    }
+                    if (attempts > 40) {
+                        clearInterval(timer)
+                    }
+                }, 250)
+            }
+
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                run()
+            } else {
+                document.addEventListener("DOMContentLoaded", run)
+            }
+        })()
+    </script>
+    <script>
+        (() => {
+            const faqs = [
+                {
+                    question: "How does the micro-auth flow work?",
+                    answer: "Users send a dust balance-change transaction, we return a signed session attestation you can reuse across your stack--no approvals or captchas.",
+                },
+                {
+                    question: "Is it really free to use?",
+                    answer: "Service and integration are fully free; usage is fueled by the token so teams ship without fees.",
+                },
+                {
+                    question: "What do I integrate?",
+                    answer: "Call the API/SDK to request a challenge and poll for attestation, then manage receiver amounts, keys, and logs in the admin portal.",
+                },
+                {
+                    question: "Which chains are supported?",
+                    answer: "Solana first, with EVM and rollup coverage on the roadmap as demand lands.",
+                },
+                {
+                    question: "How do you prevent farming or replay?",
+                    answer: "Per-wallet thresholds, receiver rotation, nonce'd attestations, and short-lived validity keep farming and replay in check.",
+                },
+            ]
+
+            const normalize = (value) =>
+                (value || "")
+                    .replace(/[’‘]/g, "'")
+                    .replace(/[“”]/g, '"')
+                    .replace(/—/g, "--")
+                    .replace(/\u00a0/g, " ")
+                    .replace(/\s+/g, " ")
+                    .trim()
+                    .toLowerCase()
+
+            const questionMap = new Map([
+                [normalize("How can AI automation help my business?"), faqs[0].question],
+                [normalize("Is AI automation difficult to integrate?"), faqs[1].question],
+                [normalize("What industries can benefit from AI automation?"), faqs[2].question],
+                [normalize("Do I need technical knowledge to use AI automation?"), faqs[3].question],
+                [normalize("What kind of support do you offer?"), faqs[4].question],
+            ])
+
+            const answerMap = new Map([
+                [
+                    normalize(
+                        "AI automation eliminates repetitive tasks, improves efficiency, and reduces errors. It allows your team to focus on high-value work while increasing productivity and lowering operational costs."
+                    ),
+                    faqs[0].answer,
+                ],
+                [
+                    normalize(
+                        "Yes. The token underwrites infra, attestation settlement, and ops so teams and users pay $0 to verify."
+                    ),
+                    faqs[1].answer,
+                ],
+                [
+                    normalize(
+                        "Yes. The token underwrites infra, attestation settlement, and ops so teams and users pay 0$ to verify."
+                    ),
+                    faqs[1].answer,
+                ],
+                [
+                    normalize(
+                        "No! Our AI solutions are designed for seamless integration with your existing tools and workflows. We provide step-by-step guidance to ensure a smooth and hassle-free setup."
+                    ),
+                    faqs[1].answer,
+                ],
+                [
+                    normalize(
+                        "AI automation is beneficial across various industries, including marketing, sales, finance, healthcare, customer support, and operations. Any business looking to improve efficiency can leverage AI."
+                    ),
+                    faqs[2].answer,
+                ],
+                [
+                    normalize(
+                        "Not at all! Our platform is user-friendly and built for all skill levels. We provide onboarding, tutorials, and customer support to ensure you can easily navigate and use the system."
+                    ),
+                    faqs[3].answer,
+                ],
+                [
+                    normalize(
+                        "We offer comprehensive support, including onboarding assistance, troubleshooting, and ongoing updates. Our team is available to help with any questions or technical issues you may have."
+                    ),
+                    faqs[4].answer,
+                ],
+            ])
+
+            const findReplacement = (norm) => {
+                for (const [key, value] of questionMap.entries()) {
+                    if (norm === key || norm.includes(key)) return value
+                }
+                for (const [key, value] of answerMap.entries()) {
+                    if (norm === key || norm.includes(key)) return value
+                }
+                return null
+            }
+
+            const replaceTextNodes = (root) => {
+                let changed = false
+                const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+                let node = walker.nextNode()
+                while (node) {
+                    const trimmed = node.nodeValue?.trim()
+                    if (!trimmed) {
+                        node = walker.nextNode()
+                        continue
+                    }
+                    const norm = normalize(trimmed)
+                    const replacement = findReplacement(norm)
+                    if (replacement) {
+                        node.nodeValue = replacement
+                        changed = true
+                    }
+                    node = walker.nextNode()
+                }
+                return changed
+            }
+
+            const replaceElementText = (root) => {
+                let changed = false
+                const targets = root.querySelectorAll(
+                    "[data-framer-component-type='Text'], p, span, h1, h2, h3, h4, h5, h6, button, a, div"
+                )
+                targets.forEach((el) => {
+                    const text = el.textContent?.trim()
+                    if (!text) return
+                    const norm = normalize(text)
+                    const replacement = findReplacement(norm)
+                    if (replacement) {
+                        el.textContent = replacement
+                        changed = true
+                    }
+                })
+                return changed
+            }
+
+            const applyEverywhere = (root) => {
+                let changed = false
+                const stack = [root]
+                while (stack.length) {
+                    const current = stack.pop()
+                    changed = replaceTextNodes(current) || replaceElementText(current) || changed
+                    current.querySelectorAll("*").forEach((el) => {
+                        if (el.shadowRoot) stack.push(el.shadowRoot)
+                        const text = el.textContent?.trim()
+                        if (!text) return
+                        const norm = normalize(text)
+                        const replacement = findReplacement(norm)
+                        if (replacement) {
+                            el.textContent = replacement
+                            changed = true
+                        }
+                    })
+                }
+                return changed
+            }
+
+            const isSettled = (root) => {
+                const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+                let node = walker.nextNode()
+                while (node) {
+                    const trimmed = node.nodeValue?.trim()
+                    if (!trimmed) {
+                        node = walker.nextNode()
+                        continue
+                    }
+                    const norm = normalize(trimmed)
+                    if (questionMap.has(norm) || answerMap.has(norm)) return false
+                    node = walker.nextNode()
+                }
+                return true
+            }
+
+            const applyFaqs = () => {
+                const root = document.querySelector('[data-framer-name="Faqs"]') || document.body
+                return applyEverywhere(root)
+            }
+
+            const start = () => {
+                const root = document.querySelector('[data-framer-name="Faqs"]') || document.body
+                applyFaqs()
+                let attempts = 0
+                const observer = new MutationObserver(() => {
+                    attempts += 1
+                    applyFaqs()
+                    if (attempts > 2000) observer.disconnect()
+                })
+                observer.observe(root, { subtree: true, childList: true, characterData: true })
+                setTimeout(() => observer.disconnect(), 300000)
+                const interval = setInterval(() => {
+                    applyFaqs()
+                }, 500)
+                setTimeout(() => clearInterval(interval), 10000)
+
+                const schedule = () => {
+                    setTimeout(applyFaqs, 0)
+                    setTimeout(applyFaqs, 50)
+                    setTimeout(applyFaqs, 150)
+                }
+
+                root.addEventListener("click", schedule, true)
+                root.addEventListener(
+                    "keydown",
+                    (e) => {
+                        if (e.key === "Enter" || e.key === " ") schedule()
+                    },
+                    true
+                )
+            }
+
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                start()
+            } else {
+                document.addEventListener("DOMContentLoaded", start)
+            }
+        })()
+    </script>
+    <script>
+        (() => {
+            const textReplacements = [
+                {
+                    from: "Our Simple, Smart, and Scalable Process",
+                    to: "Roadmap to trusted on-chain sessions",
+                },
+                {
+                    from: "We design, develop, and implement automation tools that help you work smarter, not harder",
+                    to: "From threat review to live attestations, we harden on-chain auth in four focused phases.",
+                },
+                {
+                    from: "Smart Analyzing",
+                    to: "Recon & threat model",
+                },
+                {
+                    from: "We assess your needs and identify AI solutions to streamline workflows and improve efficiency.",
+                    to: "We map your auth flow, wallet touchpoints, and abuse vectors, then define success guardrails for the rollout.",
+                },
+                {
+                    from: "AI Development",
+                    to: "Dust challenge design",
+                },
+                {
+                    from: "Our team builds intelligent automation systems tailored to your business processes.",
+                    to: "We calibrate the micro-transaction amount, receiver, and replay/farming protections, and ship a runbook your team can follow.",
+                },
+                {
+                    from: "Seamless Integration",
+                    to: "Integration & attestations",
+                },
+                {
+                    from: "We smoothly integrate AI solutions into your existing infrastructure with minimal disruption.",
+                    to: "We wire the SDK, return signed session attestations you can reuse across your Solana stack, and avoid wallet approval prompts.",
+                },
+                {
+                    from: "Continuous Optimization",
+                    to: "Observe & harden",
+                },
+                {
+                    from: "We refine performance, analyze insights, and enhance automation for long-term growth.",
+                    to: "We monitor fraud signals, tune thresholds, rotate keys, and extend attestations to new surfaces as usage grows.",
+                },
+            ]
+
+            const applyProcessCopy = () => {
+                let changed = false
+                const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+                let node = walker.nextNode()
+                while (node) {
+                    const trimmed = node.nodeValue?.trim()
+                    const replacement = textReplacements.find((entry) => trimmed === entry.from)
+                    if (replacement) {
+                        node.nodeValue = node.nodeValue.replace(replacement.from, replacement.to)
+                        changed = true
+                    }
+                    node = walker.nextNode()
+                }
+                return changed
+            }
+
+            const run = () => {
+                if (applyProcessCopy()) return
+                let attempts = 0
+                const timer = setInterval(() => {
+                    attempts += 1
+                    if (applyProcessCopy() || attempts > 40) {
+                        clearInterval(timer)
+                    }
+                }, 300)
+            }
+
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                run()
+            } else {
+                document.addEventListener("DOMContentLoaded", run)
+            }
         })()
     </script>
     

@@ -3,11 +3,66 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SAFU Auth Protocol</title>
+    <title>SAFU Auth</title>
     <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="./src/styles.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="page">
+      <div class="gradient"></div>
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+
+      <header class="nav">
+        <div class="brand" data-scroll="top">SAFU Auth</div>
+        <div class="nav-links">
+          <a href="#top" data-scroll="top">Home</a>
+          <a href="#product" data-scroll="product">Product</a>
+          <a href="#faq" data-scroll="faq">FAQ</a>
+          <a href="/framer.html">Framer landing</a>
+        </div>
+        <div class="nav-actions" id="auth-shell">
+          <div class="auth-inline" id="auth-form">
+            <input id="email-input" placeholder="email" />
+            <input id="password-input" placeholder="password" type="password" />
+            <button class="button" id="btn-login">Log in</button>
+            <button class="button ghost" id="btn-signup">Sign up</button>
+          </div>
+          <div class="auth-inline hidden" id="auth-authed">
+            <div class="pill" id="auth-user"></div>
+            <a class="button ghost" href="/dashboard.html">Dashboard</a>
+            <button class="button ghost" id="btn-logout">Logout</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="hero" id="top">
+          <div class="logo-placeholder" aria-label="Logo placeholder"></div>
+        </section>
+
+        <section class="particle-section" id="viz">
+          <div class="stack">
+            <div class="badge-row">
+              <span class="badge">Live backdrop</span>
+              <span class="pill">Interactive</span>
+            </div>
+            <h2>Signal map</h2>
+            <p class="muted">Subtle particle field sitting behind this block so the hero stays clean.</p>
+          </div>
+          <div class="particle-panel">
+            <div id="particle-canvas"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="brand">SAFU Auth</div>
+        <div class="muted">Micro-transaction login for Solana apps.</div>
+      </footer>
+    </div>
+
+    <script defer type="module" src="./src/particles.js"></script>
+    <script defer type="module" src="./src/site.js"></script>
   </body>
 </html>

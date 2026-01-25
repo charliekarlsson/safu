@@ -12,7 +12,7 @@ pnpm dev:backend
 Environment variables (optional):
 - `PORT` (default 8787)
 - `SOLANA_RPC` (default https://api.devnet.solana.com)
-- `MIN_LAMPORTS` (default 10000)
+- `MIN_LAMPORTS` (default 7000)
 - `CHALLENGE_TTL_MS` (default 300000)
 - `JWT_SECRET` (default change-me)
 - `SOLANA_COMMITMENT` (default confirmed)

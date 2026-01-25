@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SAFU Auth Dashboard</title>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <div class="gradient"></div>
+      <header class="nav">
+        <div class="brand"><a href="/">SAFU Auth</a></div>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/index.html#faq">FAQ</a>
+        </div>
+        <div class="nav-actions" id="auth-shell">
+          <div class="auth-inline hidden" id="auth-authed">
+            <div class="pill" id="auth-user"></div>
+            <button class="button ghost" id="btn-logout">Logout</button>
+          </div>
+          <div class="auth-inline" id="auth-form">
+            <a class="button ghost" href="/">Login on home</a>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="hero" id="top">
+          <div class="badge-row">
+            <span class="badge">Dashboard</span>
+            <span class="pill">Live demo</span>
+          </div>
+          <h1>Issue challenges and watch auth in real time.</h1>
+          <p class="lead">Use your API key to create a challenge, then poll status or receive a webhook.</p>
+        </section>
+
+        <section class="section split">
+          <div class="stack">
+            <h3>Create a challenge</h3>
+            <p class="muted">Requires a valid API key from your account.</p>
+            <div class="inline" style="gap: 10px; flex-wrap: wrap">
+              <button class="button" id="btn-create-challenge">Create challenge</button>
+              <span class="status" data-status-badge>● PENDING</span>
+            </div>
+            <div class="stack small hidden" id="challenge-card">
+              <div class="mono">Send <span id="challenge-amount"></span> to</div>
+              <div class="address" id="challenge-recipient"></div>
+              <div class="mono">Challenge: <span id="challenge-id"></span></div>
+              <div class="mono">Expires: <span id="challenge-expiry"></span></div>
+            </div>
+            <p class="muted" id="challenge-empty">Generate a challenge to see the recipient and ttl.</p>
+            <p class="error-text hidden" id="challenge-error"></p>
+          </div>
+          <div class="stack">
+            <h3>Live session</h3>
+            <p class="muted">Status updates every 2s. Webhooks fire when consumed.</p>
+            <div class="stack small hidden" id="session-card">
+              <div class="mono">User: <span id="session-user"></span></div>
+              <div class="mono">TX: <span id="session-tx"></span></div>
+              <div class="code-block"><pre id="session-token"></pre></div>
+            </div>
+            <div class="code-block"><pre id="snippet-api"></pre></div>
+            <div class="code-block"><pre id="snippet-curl"></pre></div>
+          </div>
+        </section>
+
+        <section class="section split">
+          <div class="stack">
+            <h3>Your API key</h3>
+            <p class="muted">Rotate or refresh to sync latest project data.</p>
+            <div class="stack small hidden" id="apikey-card">
+              <div class="mono">API key</div>
+              <div class="address" id="apikey-value"></div>
+              <div class="mono">Project: <span id="project-name"></span></div>
+              <div class="inline" style="gap: 8px; flex-wrap: wrap">
+                <button class="button ghost" id="btn-refresh">Refresh</button>
+                <button class="button ghost" id="btn-rotate">Rotate key</button>
+              </div>
+            </div>
+            <p class="error-text hidden" id="auth-error"></p>
+            <p class="muted">Need an account? Log in or sign up from the home page header.</p>
+          </div>
+          <div class="stack">
+            <h3>Webhook sample</h3>
+            <input id="webhook-input" placeholder="https://your.app/hook" />
+            <div class="code-block">
+              <pre>{
+  event: "challenge.consumed",
+  challengeId,
+  projectId,
+  userPubkey,
+  txSignature,
+  amountLamports,
+  receivedLamports,
+  status: "authenticated"
+}</pre>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="brand">SAFU Auth</div>
+        <div class="muted">Micro-transaction login for Solana apps.</div>
+      </footer>
+    </div>
+
+    <script defer type="module" src="./src/dashboard.js"></script>
+  </body>
+</html>
